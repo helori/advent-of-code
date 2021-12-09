@@ -50,7 +50,7 @@ class Day_09 extends Aoc
             }
         });
 
-        $this->increment($this->lowPoints, 1);
+        $this->lowPoints = $this->increment($this->lowPoints, 1);
 
         return array_sum($this->lowPoints);
     }

@@ -70,10 +70,7 @@ abstract class Aoc
 
     protected function increment(array &$values, int $inc = 1)
     {
-        foreach($values as $i => $value)
-        {
-            $values[$i] = $values[$i] + $inc;
-        }
+        return array_map(function($v) use($inc) { return $v + $inc; }, $values);
     }
 
     protected function matrixRows(&$matrix)
