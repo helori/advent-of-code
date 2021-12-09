@@ -1,0 +1,16 @@
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
+use Symfony\Component\VarDumper\VarDumper;
+
+$day = $argv[1];
+$classname = 'Aoc\\Day'.$day;
+
+$result = (new $classname())->run();
+echo "------------\n";
+echo "Résultat partie 1 : ".$result['result_part1']."\n";
+echo "Temps d'exécution : ".$result['seconds_part1']."s\n";
+echo "Résultat partie 2 : ".$result['result_part2']."\n";
+echo "Temps d'exécution : ".$result['seconds_part2']."s\n";
+echo "------------\n";
