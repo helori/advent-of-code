@@ -4,13 +4,50 @@ require __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\VarDumper\VarDumper;
 
-$day = $argv[1];
-$classname = 'Aoc\\Day'.$day;
+if($argc < 3){
+    echo "------------------------------\n";
+    echo "Run either of the following :\n";
+    echo "- Create class for a day : php aoc create 12\n";
+    echo "- Run code for a day : php aoc run 12\n";
+    echo "------------------------------\n";
+    exit;
+}
 
-$result = (new $classname())->run();
-echo "------------\n";
-echo "Résultat partie 1 : ".$result['result_part1']."\n";
-echo "Temps d'exécution : ".$result['seconds_part1']."s\n";
-echo "Résultat partie 2 : ".$result['result_part2']."\n";
-echo "Temps d'exécution : ".$result['seconds_part2']."s\n";
-echo "------------\n";
+if($argv[1] === 'create')
+{
+    $day = intVal($argv[2]);
+    $day = str_pad($day, 2, '0', STR_PAD_LEFT);
+    
+    $stub = file_get_contents(__DIR__.'/stubs/Day.php');
+    $classname = 'Day_'.$day;
+    $stub = str_replace('Day extends', $classname.' extends', $stub);
+
+    $filepath = __DIR__.'/src/'.$classname.'.php';
+    if(!file_exists($filepath)){
+        file_put_contents($filepath, $stub);
+    }else{
+        echo "The class file already exists !\n";
+    }
+
+    $filepath = __DIR__.'/files/'.$classname.'.txt';
+    if(!file_exists($filepath)){
+        file_put_contents($filepath, '');
+    }else{
+        echo "The input file already exists !\n";
+    }
+}
+else if($argv[1] === 'run')
+{
+    $day = str_pad($argv[2], 2, '0', STR_PAD_LEFT);
+    $classname = 'Aoc\\Day_'.$day;
+
+    $result = (new $classname())->run();
+    echo "------------\n";
+    echo "Résultat partie 1 : ".$result['result_part1']."\n";
+    echo "Temps d'exécution : ".$result['seconds_part1']."s\n";
+    echo "Résultat partie 2 : ".$result['result_part2']."\n";
+    echo "Temps d'exécution : ".$result['seconds_part2']."s\n";
+    echo "------------\n";
+}
+
+    

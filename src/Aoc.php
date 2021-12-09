@@ -17,7 +17,7 @@ abstract class Aoc
 
     public function __construct()
     {
-        $filename = Str::lower(Str::after(static::class, 'Aoc\\'));
+        $filename = Str::after(static::class, 'Aoc\\');
         $this->lines = array_filter($this->fileLines($filename.'.txt'));
         $this->init();
     }
@@ -43,6 +43,16 @@ abstract class Aoc
     protected function fileLines($filename)
     {
         $filepath = __DIR__.'/../files/'.$filename;
+        
+        if(!file_exists($filepath)){
+            $this->dd("Missing file : ".$filepath);
+        }
+
+        $content = trim(file_get_contents($filepath));
+        if(empty($content)){
+            $this->dd("Empty file : ".$filepath);
+        }
+
         $content = fopen($filepath, 'r');
         $values = [];
 
@@ -65,8 +75,6 @@ abstract class Aoc
             $values[$i] = $values[$i] + $inc;
         }
     }
-
-        
 
     protected function matrixRows(&$matrix)
     {

@@ -5,7 +5,7 @@ namespace Aoc;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 
-class Day9 extends Aoc
+class Day_09 extends Aoc
 {
     protected $matrix = null;
     protected $rows = null;
