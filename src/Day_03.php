@@ -20,20 +20,18 @@ class Day_03 extends Aoc
         }
 
         $numCols = $this->matrixCols($matrix);
-
         $g = '';
-        $e = '';
 
         for($i = 0; $i<$numCols; ++$i)
         {
             $column = $this->matrixCol($matrix, $i);
-
-            $num1 = array_sum($column);
-            $more1 = ($num1 >= count($column)/2);
-
+            $more1 = (array_sum($column) >= count($column)/2);
             $g .= $more1 ? '1' : '0';
-            $e .= $more1 ? '0' : '1';
         }
+
+        $e = str_replace('0', '2', $g);
+        $e = str_replace('1', '0', $e);
+        $e = str_replace('2', '1', $e);
 
         return bindec($g) * bindec($e);
     }
