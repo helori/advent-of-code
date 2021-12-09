@@ -4,6 +4,8 @@ require __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\VarDumper\VarDumper;
 
+error_reporting(E_ALL);
+
 if($argc < 3){
     echo "------------------------------\n";
     echo "Run either of the following :\n";

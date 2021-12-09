@@ -83,6 +83,15 @@ abstract class Aoc
         return count($matrix[0]);
     }
 
+    protected function matrixCol(&$matrix, $colIdx)
+    {
+        $col = [];
+        for($r=0; $r<count($matrix); $r++){
+            $col[] = $matrix[$r][$colIdx];
+        }
+        return $col;
+    }
+
     protected function readMatrix(&$matrix, $callback)
     {
         $rows = $this->matrixRows($matrix);
