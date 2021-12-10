@@ -72,7 +72,6 @@ class Day_10 extends Aoc
                         unset($opens[$lastIdx]);
                     }else{
                         $corrupted[$lineIdx] = [
-                            'opens' => $opens,
                             'expected' => $this->closingCharFor($opens[$lastIdx]),
                             'found' => $char,
                         ];
