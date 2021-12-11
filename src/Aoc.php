@@ -70,7 +70,9 @@ abstract class Aoc
 
     protected function increment(array &$values, int $inc = 1)
     {
-        return array_map(function($v) use($inc) { return $v + $inc; }, $values);
+        return array_map(function($v) use($inc) { 
+            return $v + $inc; 
+        }, $values);
     }
 
     protected function matrixRows(&$matrix)
@@ -103,6 +105,34 @@ abstract class Aoc
             {
                 $callback($matrix[$r][$c], $r, $c, $rows, $cols);
             }
+        }
+    }
+
+    protected function matrixAt(&$matrix, $r, $c)
+    {
+        if($this->matrixExistsAt($matrix, $r, $c))
+        {
+            return $matrix[$r][$c];
+        }
+        return null;
+    }
+
+    protected function matrixExistsAt(&$matrix, $r, $c)
+    {
+        $rows = $this->matrixRows($matrix);
+        $cols = $this->matrixCols($matrix);
+        return ($r >= 0 && ($r < $rows) && $c >= 0 && ($c < $cols));
+    }
+
+    protected function renderMatrix(&$matrix, $separator = '')
+    {
+        $rows = $this->matrixRows($matrix);
+        $cols = $this->matrixCols($matrix);
+
+        for($r=0; $r<$rows; ++$r)
+        {
+            $lineStr = implode($separator, $matrix[$r]);
+            echo $lineStr."\n";
         }
     }
 
