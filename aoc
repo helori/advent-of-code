@@ -3,8 +3,81 @@
 require __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\VarDumper\VarDumper;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use Carbon\Carbon;
 
 error_reporting(E_ALL);
+
+if($argv[1] === 'rank')
+{
+    $client = new Client();
+    $jar = CookieJar::fromArray(
+        [
+            'session' => '53616c7465645f5f6c4403a991f9ab788e5304c29085f5fcda7e859cb06d9cb97266048c25fcc9f837d3fab4575c2a0f',
+        ],
+        'adventofcode.com'
+    );
+    $response = $client->request('GET', 'https://adventofcode.com/2021/leaderboard/private/view/629107.json', [
+        'cookies' => $jar
+    ]);
+    $body = $response->getBody();
+    $data = json_decode($body, true);
+
+    $members = [];
+    foreach($data['members'] as $member)
+    {
+        $minTime = 9999999999;
+        $minDay = null;
+        $minStar = null;
+
+        foreach($member['completion_day_level'] as $d => $day){
+            foreach($day as $star => $starData){
+                $timestamp = intVal($starData['get_star_ts']);
+                $time = Carbon::createFromTimestamp($timestamp);
+                $start = Carbon::create(2021, 12, $d, 6, 0, 0)->setTimezone('Europe/Paris')->setHour(6);
+                $seconds = $start->diffInSeconds($time);
+                if($seconds < $minTime)
+                {
+                    $minTime = $seconds;
+                    $minDay = $d;
+                    $minStar = $star;
+                }
+            }
+        }
+        
+        $hours = intVal(floor($minTime / 3600));
+        $minutes = intVal(floor(($minTime - $hours * 3600) / 60));
+        $seconds = $minTime - $hours * 3600 - $minutes * 60;
+        $str = $hours.":".str_pad($minutes, 2, '0', STR_PAD_LEFT).":".str_pad($seconds, 2, '0', STR_PAD_LEFT);
+
+        $members[] = [
+            'name' => $member['name'],
+            'min_time_seconds' => $minTime,
+            'min_time_str' => $str,
+            'min_time_day' => $minDay,
+            'min_time_star' => $minStar,
+        ];
+
+        //echo $member['name']." : ".$str."\n";
+    }
+
+
+
+    usort($members, function($a, $b){
+        return ($a['min_time_seconds'] < $b['min_time_seconds']) ? -1 : 1;
+    });
+
+    //VarDumper::dump($members);
+
+    echo "------------\n";
+    foreach($members as $member)
+    {
+        echo $member['name']." : ".$member['min_time_str']." (Day ".$member['min_time_day'].")\n";
+    }
+    echo "------------\n";
+    exit;   
+}
 
 if($argc < 3){
     echo "------------------------------\n";
