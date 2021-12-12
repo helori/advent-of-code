@@ -9,14 +9,6 @@ use Carbon\Carbon;
 
 error_reporting(E_ALL);
 
-function secondsToStr($timeSeconds)
-{
-    $hours = intVal(floor($timeSeconds / 3600));
-    $minutes = intVal(floor(($timeSeconds - $hours * 3600) / 60));
-    $seconds = $timeSeconds - $hours * 3600 - $minutes * 60;
-    return $hours.":".str_pad($minutes, 2, '0', STR_PAD_LEFT).":".str_pad($seconds, 2, '0', STR_PAD_LEFT);
-}
-
 if($argv[1] === 'rank')
 {
     $client = new Client();
@@ -37,12 +29,7 @@ if($argv[1] === 'rank')
     {
         $minTime = 9999999999;
         $minDay = null;
-
-        $diffTime = 9999999999;
-        $diffDay = null;
-
-        $diffSum = 0;
-        $diffDays = 0;
+        $minStar = null;
 
         foreach($member['completion_day_level'] as $d => $day){
             foreach($day as $star => $starData){
@@ -54,33 +41,22 @@ if($argv[1] === 'rank')
                 {
                     $minTime = $seconds;
                     $minDay = $d;
+                    $minStar = $star;
                 }
-            }
-            if(count($day) === 2){
-                $t1 = Carbon::createFromTimestamp($day['1']['get_star_ts']);
-                $t2 = Carbon::createFromTimestamp($day['2']['get_star_ts']);
-                $seconds = $t1->diffInSeconds($t2);
-                if($seconds < $diffTime)
-                {
-                    $diffTime = $seconds;
-                    $diffDay = $d;
-                }
-                $diffSum += $seconds;
-                $diffDays++;
             }
         }
         
-        $str = secondsToStr($minTime);
+        $hours = intVal(floor($minTime / 3600));
+        $minutes = intVal(floor(($minTime - $hours * 3600) / 60));
+        $seconds = $minTime - $hours * 3600 - $minutes * 60;
+        $str = $hours.":".str_pad($minutes, 2, '0', STR_PAD_LEFT).":".str_pad($seconds, 2, '0', STR_PAD_LEFT);
+
         $members[] = [
             'name' => $member['name'],
             'min_time_seconds' => $minTime,
-            'min_time_str' => secondsToStr($minTime),
+            'min_time_str' => $str,
             'min_time_day' => $minDay,
-            'diff_time_seconds' => $diffTime,
-            'diff_time_str' => secondsToStr($diffTime),
-            'diff_time_day' => $diffDay,
-            'diff_avg_seconds' => round($diffSum / $diffDays),
-            'diff_avg_str' => secondsToStr(round($diffSum / $diffDays)),
+            'min_time_star' => $minStar,
         ];
 
         //echo $member['name']." : ".$str."\n";
@@ -88,39 +64,16 @@ if($argv[1] === 'rank')
 
 
 
-    
-
-    //VarDumper::dump($members);
-
-    echo "---------------------------------------------------------------------\n";
-    echo "Classement de ceux qui ont eu une 1ère étoile en un minimum de temps\n";
-    echo "---------------------------------------------------------------------\n";
     usort($members, function($a, $b){
         return ($a['min_time_seconds'] < $b['min_time_seconds']) ? -1 : 1;
     });
+
+    //VarDumper::dump($members);
+
+    echo "------------\n";
     foreach($members as $member)
     {
         echo $member['name']." : ".$member['min_time_str']." (Day ".$member['min_time_day'].")\n";
-    }
-    echo "---------------------------------------------------------------------\n";
-    echo "Classement de ceux qui ont mis le moins de temps entre 2 étoiles\n";
-    echo "---------------------------------------------------------------------\n";
-    usort($members, function($a, $b){
-        return ($a['diff_time_seconds'] < $b['diff_time_seconds']) ? -1 : 1;
-    });
-    foreach($members as $member)
-    {
-        echo $member['name']." : ".$member['diff_time_str']." (Day ".$member['diff_time_day'].")\n";
-    }
-    echo "---------------------------------------------------------------------\n";
-    echo "Classement de ceux qui ont mis en moyenne le moins de temps entre 2 étoiles\n";
-    echo "---------------------------------------------------------------------\n";
-    usort($members, function($a, $b){
-        return ($a['diff_avg_seconds'] < $b['diff_avg_seconds']) ? -1 : 1;
-    });
-    foreach($members as $member)
-    {
-        echo $member['name']." : ".$member['diff_avg_str']."\n";
     }
     echo "------------\n";
     exit;   
