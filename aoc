@@ -119,6 +119,32 @@ if($argv[1] === 'rank')
     exit;   
 }
 
+else if($argv[1] === 'check')
+{
+    $days = Carbon::now()->day;
+    $results = require(__DIR__.'/results.php');
+
+    echo "------------\n";
+    for($day=1; $day<=$days; $day++)
+    {
+        $dayStr = str_pad($day, 2, '0', STR_PAD_LEFT);
+        $classname = 'Aoc\\Day_'.$dayStr;
+
+        if(class_exists($classname))
+        {
+            $dayResults = (new $classname())->run();
+            
+            $ok1 = ($dayResults['result_part1'] === $results[$day]['part1']);
+            $ok2 = ($dayResults['result_part2'] === $results[$day]['part2']);
+
+            echo "Jour ".$dayStr." | Partie 1 : ".($ok1 ? 'OK' : 'ERROR (expected '.$results[$day]['part1'].', got '.$dayResults['result_part1'].')')."\n";
+            echo "Jour ".$dayStr." | Partie 2 : ".($ok2 ? 'OK' : 'ERROR (expected '.$results[$day]['part2'].', got '.$dayResults['result_part2'].')')."\n";
+        }
+    }
+    echo "------------\n";
+    exit;
+}
+
 if($argc < 3){
     echo "------------------------------\n";
     echo "Run either of the following :\n";
