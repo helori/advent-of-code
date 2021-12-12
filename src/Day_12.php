@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 class Day_12 extends Aoc
 {
     protected $connections = [];
+    protected $paths = [];
 
     protected function init()
     {
@@ -34,19 +35,19 @@ class Day_12 extends Aoc
 
     protected function runPart1()
     {
-        $paths = [];
-        $this->visitPaths('start', $paths, ['start'], false);
-        return count($paths);
+        $this->paths = [];
+        $this->visitPaths('start', ['start'], false);
+        return count($this->paths);
     }
 
     protected function runPart2()
     {
-        $paths = [];
-        $this->visitPaths('start', $paths, ['start'], true);
-        return count($paths);
+        $this->paths = [];
+        $this->visitPaths('start', ['start'], true);
+        return count($this->paths);
     }
 
-    protected function visitPaths($cave, &$paths, $pathToCopy, $allowTwice)
+    protected function visitPaths($cave, $pathToCopy, $allowTwice)
     {
         foreach($this->connections[$cave] as $nextCave)
         {
@@ -55,24 +56,24 @@ class Day_12 extends Aoc
             if($nextCave === 'end')
             {
                 $path[] = 'end';
-                $paths[] = $path;
+                $this->paths[] = $path;
             }
             else if(ctype_upper($nextCave))
             {
                 $path[] = $nextCave;
-                $this->visitPaths($nextCave, $paths, $path, $allowTwice);
+                $this->visitPaths($nextCave, $path, $allowTwice);
             }
             else
             {
                 if(!in_array($nextCave, $path))
                 {
                     $path[] = $nextCave;
-                    $this->visitPaths($nextCave, $paths, $path, $allowTwice);
+                    $this->visitPaths($nextCave, $path, $allowTwice);
                 }
                 else if($allowTwice)
                 {
                     $path[] = $nextCave;
-                    $this->visitPaths($nextCave, $paths, $path, false);
+                    $this->visitPaths($nextCave, $path, false);
                 }
             }
         }
