@@ -8,8 +8,6 @@ use Illuminate\Support\Arr;
 class Day_11 extends Aoc
 {
     protected $matrix = null;
-    protected $rows = null;
-    protected $cols = null;
 
     protected function init()
     {
@@ -17,8 +15,6 @@ class Day_11 extends Aoc
         foreach($this->matrix as $i => $line){
             $this->matrix[$i] = $this->toInts(str_split(trim($line)));
         }
-        $this->rows = $this->matrixRows($this->matrix);
-        $this->cols = $this->matrixCols($this->matrix);
     }
 
     protected function runPart1()
@@ -26,40 +22,54 @@ class Day_11 extends Aoc
         $steps = 100;
         $flashes = 0;
 
-        for($step=0; $step<$steps; ++$step)
-        {
-            $hasFlashed = [];
-
-            for($r=0; $r<$this->rows; ++$r)
-            {
-                for($c=0; $c<$this->cols; ++$c)
-                {
-                    $this->tryInc($r, $c, $hasFlashed);
-                }
-            }
-
+        $this->runSteps($steps, function($step, $hasFlashed) use(&$flashes) {
             $flashes += count($hasFlashed);
-            
-            /*echo "---------\n";
-            echo "After step ".($step + 1)." :\n\n";
-            $this->renderMatrix($this->matrix);*/
-        }
+        });
 
         return $flashes;
     }
 
-    protected function flashAround($r, $c, &$hasFlashed)
+    protected function runPart2()
     {
-        for($x = $r-1; $x <= $r+1; ++$x)
+        $step = 0;
+        $total = null;
+
+        while($total !== 0)
         {
-            for($y = $c-1; $y <= $c+1; ++$y)
-            {
-                if(($x !== $r) || ($y !== $c))
-                {
-                    $this->tryInc($x, $y, $hasFlashed);
-                }
-            }
+            $this->runStep();
+
+            $step++;
+            $total = 0;
+
+            $this->readMatrix($this->matrix, function($value) use(&$total) {
+                $total += $value;
+            });
         }
+
+        return $step;
+    }
+
+    protected function runSteps($steps, $callback)
+    {
+        for($step=0; $step<$steps; ++$step)
+        {
+            $hasFlashed = $this->runStep();
+
+            /*echo "---------\n";
+            echo "After step ".($step + 1)." :\n\n";
+            $this->renderMatrix($this->matrix);*/
+
+            $callback($step, $hasFlashed);
+        }
+    }
+
+    protected function runStep()
+    {
+        $hasFlashed = [];
+        $this->readMatrix($this->matrix, function($value, $r, $c) use(&$hasFlashed) {
+            $this->tryInc($r, $c, $hasFlashed);
+        });
+        return $hasFlashed;
     }
 
     protected function tryInc($r, $c, &$hasFlashed)
@@ -84,40 +94,17 @@ class Day_11 extends Aoc
         }
     }
 
-    protected function runPart2()
+    protected function flashAround($r, $c, &$hasFlashed)
     {
-        $this->init();
-        $steps = 1000000;
-        $allStep = null;
-
-        for($step=0; $step<$steps; ++$step)
+        for($x = $r-1; $x <= $r+1; ++$x)
         {
-            $hasFlashed = [];
-
-            for($r=0; $r<$this->rows; ++$r)
+            for($y = $c-1; $y <= $c+1; ++$y)
             {
-                for($c=0; $c<$this->cols; ++$c)
+                if(($x !== $r) || ($y !== $c))
                 {
-                    $this->tryInc($r, $c, $hasFlashed);
+                    $this->tryInc($x, $y, $hasFlashed);
                 }
             }
-
-            $total = 0;
-            $this->readMatrix($this->matrix, function($value) use(&$total) {
-                $total += $value;
-            });
-            
-            echo "---------\n";
-            echo "After step ".($step + 1)." :\n\n";
-            $this->renderMatrix($this->matrix);
-            echo "Total : ".$total."\n";
-
-            if($total === 0){
-                $allStep = ($step + 1);
-                break;
-            }
         }
-
-        return $allStep;
     }
 }

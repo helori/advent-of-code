@@ -82,15 +82,8 @@ if($argv[1] === 'rank')
             'diff_avg_seconds' => round($diffSum / $diffDays),
             'diff_avg_str' => secondsToStr(round($diffSum / $diffDays)),
         ];
-
-        //echo $member['name']." : ".$str."\n";
     }
 
-
-
-    
-
-    //VarDumper::dump($members);
 
     echo "---------------------------------------------------------------------\n";
     echo "Classement de ceux qui ont eu une 1ère étoile en un minimum de temps\n";

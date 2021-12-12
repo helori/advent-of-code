@@ -19,16 +19,17 @@ abstract class Aoc
     {
         $filename = Str::after(static::class, 'Aoc\\');
         $this->lines = array_filter($this->fileLines($filename.'.txt'));
-        $this->init();
     }
 
     public function run()
     {
         $start = Carbon::now();
+        $this->init();
         $result1 = $this->runPart1();
         $secondsPart1 = $start->floatDiffInSeconds();
 
         $start = Carbon::now();
+        $this->init();
         $result2 = $this->runPart2();
         $secondsPart2 = $start->floatDiffInSeconds();
 

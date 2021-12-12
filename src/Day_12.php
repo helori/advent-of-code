@@ -13,6 +13,8 @@ class Day_12 extends Aoc
     protected function init()
     {
         $this->lines = array_filter($this->lines);
+        $this->connections = [];
+        $this->paths = [];
 
         foreach($this->lines as $line)
         {
@@ -35,14 +37,12 @@ class Day_12 extends Aoc
 
     protected function runPart1()
     {
-        $this->paths = [];
         $this->visitPaths('start', ['start'], false);
         return count($this->paths);
     }
 
     protected function runPart2()
     {
-        $this->paths = [];
         $this->visitPaths('start', ['start'], true);
         return count($this->paths);
     }
