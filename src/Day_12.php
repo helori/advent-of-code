@@ -8,7 +8,6 @@ use Illuminate\Support\Arr;
 class Day_12 extends Aoc
 {
     protected $connections = [];
-    protected $hasBeenVisitedTwice = [];
 
     protected function init()
     {
@@ -31,27 +30,19 @@ class Day_12 extends Aoc
                 $this->connections[$parts[1]][] = $parts[0];
             }
         }
-
-        $this->dump($this->connections);
-        foreach($this->connections as $cave => $others)
-        {
-            $this->dump($cave." : ".implode(',', $others));
-        }
-        $this->dump('----');
     }
 
     protected function runPart1()
     {
         $paths = [];
-        
         $this->visitPaths('start', $paths, ['start'], false);
+        return count($paths);
+    }
 
-        /*foreach($paths as $path)
-        {
-            $str = implode(',', $path);
-            $this->dump($str);
-        }*/
-
+    protected function runPart2()
+    {
+        $paths = [];
+        $this->visitPaths('start', $paths, ['start'], true);
         return count($paths);
     }
 
@@ -61,43 +52,29 @@ class Day_12 extends Aoc
         {
             $path = $pathToCopy;
 
-            if($nextCave === 'end'){
+            if($nextCave === 'end')
+            {
                 $path[] = 'end';
                 $paths[] = $path;
             }
-            else if(ctype_upper($nextCave)){
+            else if(ctype_upper($nextCave))
+            {
                 $path[] = $nextCave;
                 $this->visitPaths($nextCave, $paths, $path, $allowTwice);
             }
-            else{
-                //$counts = array_count_values($path);
-                //if(!isset($counts[$nextCave]))
-
+            else
+            {
                 if(!in_array($nextCave, $path))
                 {
                     $path[] = $nextCave;
                     $this->visitPaths($nextCave, $paths, $path, $allowTwice);
                 }
-                else if($allowTwice){
+                else if($allowTwice)
+                {
                     $path[] = $nextCave;
                     $this->visitPaths($nextCave, $paths, $path, false);
                 }
             }
         }
-    }
-
-    protected function runPart2()
-    {
-        $paths = [];
-        
-        $this->visitPaths('start', $paths, ['start'], true);
-
-        /*foreach($paths as $path)
-        {
-            $str = implode(',', $path);
-            $this->dump($str);
-        }*/
-
-        return count($paths);
     }
 }
