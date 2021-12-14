@@ -49,6 +49,8 @@ class Day_13 extends Aoc
             $this->dots = $newDots;
         }
         $this->displayDots();
+
+        return 0;
     }
 
     protected function fold($fold)
@@ -107,5 +109,6 @@ class Day_13 extends Aoc
             }
             echo "\n";
         }
+        echo "-----------------\n";
     }
 }
