@@ -19,7 +19,7 @@ class Day_03 extends Aoc
             $matrix[$i] = $this->toInts(str_split(trim($line)));
         }
 
-        $numCols = $this->matrixCols($matrix);
+        $numCols = $this->matrixNumCols($matrix);
         $g = '';
 
         for($i = 0; $i<$numCols; ++$i)

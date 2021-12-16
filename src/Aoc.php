@@ -18,7 +18,7 @@ abstract class Aoc
     public function __construct()
     {
         $filename = Str::after(static::class, 'Aoc\\');
-        $this->lines = array_filter($this->fileLines($filename.'.txt'));
+        $this->lines = $this->fileLines($filename.'.txt');
     }
 
     public function run()
@@ -76,17 +76,17 @@ abstract class Aoc
         }, $values);
     }
 
-    protected function matrixRows(&$matrix)
+    protected function matrixNumRows($matrix)
     {
         return count($matrix);
     }
 
-    protected function matrixCols(&$matrix)
+    protected function matrixNumCols($matrix)
     {
         return count($matrix[0]);
     }
 
-    protected function matrixCol(&$matrix, $colIdx)
+    protected function matrixCol($matrix, $colIdx)
     {
         $col = [];
         for($r=0; $r<count($matrix); $r++){
@@ -95,10 +95,28 @@ abstract class Aoc
         return $col;
     }
 
+    protected function matrixCols($matrix)
+    {
+        $cols = [];
+        $numCols = $this->matrixNumCols($matrix);
+        $numRows = $this->matrixNumRows($matrix);
+
+        for($c=0; $c<$numCols; $c++)
+        {
+            $col = [];
+            for($r=0; $r<$numRows; $r++){
+                $col[] = $matrix[$r][$c];
+            }
+            $cols[] = $col;
+        }
+
+        return $cols;
+    }
+
     protected function readMatrix(&$matrix, $callback)
     {
-        $rows = $this->matrixRows($matrix);
-        $cols = $this->matrixCols($matrix);
+        $rows = $this->matrixNumRows($matrix);
+        $cols = $this->matrixNumCols($matrix);
 
         for($r=0; $r<$rows; ++$r)
         {
@@ -120,15 +138,15 @@ abstract class Aoc
 
     protected function matrixExistsAt(&$matrix, $r, $c)
     {
-        $rows = $this->matrixRows($matrix);
-        $cols = $this->matrixCols($matrix);
+        $rows = $this->matrixNumRows($matrix);
+        $cols = $this->matrixNumCols($matrix);
         return ($r >= 0 && ($r < $rows) && $c >= 0 && ($c < $cols));
     }
 
     protected function renderMatrix(&$matrix, $separator = '')
     {
-        $rows = $this->matrixRows($matrix);
-        $cols = $this->matrixCols($matrix);
+        $rows = $this->matrixNumRows($matrix);
+        $cols = $this->matrixNumCols($matrix);
 
         for($r=0; $r<$rows; ++$r)
         {

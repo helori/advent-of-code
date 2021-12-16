@@ -32,8 +32,8 @@ class Day_15 extends Aoc
 
     protected function findShortest($matrix)
     {
-        $rows = $this->matrixRows($matrix);
-        $cols = $this->matrixCols($matrix);
+        $rows = $this->matrixNumRows($matrix);
+        $cols = $this->matrixNumCols($matrix);
         
         $paths = [
             '0_0' => [
@@ -136,8 +136,8 @@ class Day_15 extends Aoc
 
     protected function replicateMatrix($matrix, $dimensions)
     {
-        $rows = $this->matrixRows($matrix);
-        $cols = $this->matrixCols($matrix);
+        $rows = $this->matrixNumRows($matrix);
+        $cols = $this->matrixNumCols($matrix);
 
         // Replicate horizontally
         for($block=1; $block<$dimensions; $block++)

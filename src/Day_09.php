@@ -23,8 +23,8 @@ class Day_09 extends Aoc
         foreach($this->matrix as $i => $line){
             $this->matrix[$i] = $this->toInts(str_split(trim($line)));
         }
-        $this->rows = $this->matrixRows($this->matrix);
-        $this->cols = $this->matrixCols($this->matrix);
+        $this->rows = $this->matrixNumRows($this->matrix);
+        $this->cols = $this->matrixNumCols($this->matrix);
     }
 
     protected function runPart1()

@@ -13,6 +13,8 @@ class Day_13 extends Aoc
 
     protected function init()
     {
+        $this->lines = array_filter($this->lines);
+
         $this->dots = [];
         $this->instructions = [];
         $this->points = [];
