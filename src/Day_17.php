@@ -28,13 +28,7 @@ class Day_17 extends Aoc
     protected function runPart1()
     {
         $results = $this->results();
-        $bestY = 0;
-
-        foreach($results as $result){
-            $bestY = max($bestY, $result['maxY']);
-        }
-        
-        return $bestY;
+        return $this->arrayMax($results, 'maxY');
     }
 
     protected function runPart2()
@@ -51,7 +45,7 @@ class Day_17 extends Aoc
         $tryY = $this->targetMinY;
         $hasReachResults = false;
 
-        while(!$hasReachResults || $tryY < -$this->targetMinY)
+        while(!$hasReachResults || $tryY <= -$this->targetMinY)
         {
             $resultsY = $this->resultsForY($tryY);
 
@@ -65,6 +59,15 @@ class Day_17 extends Aoc
 
             //echo "=> Y = $tryY | results count : ".count($resultsY)."\n";
 
+            /*if($tryY === 12)
+            {
+                echo "----------------------------------\n";
+                echo "Y = $tryY : Num shoots : ".count($resultsY)."\n";
+                echo "----------------------------------\n";
+                $this->displayPoints($resultsY);
+                exit;
+            }*/
+
             ++$tryY;
         }
         
@@ -77,7 +80,6 @@ class Day_17 extends Aoc
         $tryMaxX = $this->targetMaxX;
 
         $results = [];
-        $maxY = null;
 
         for($x=$tryMinX; $x<=$tryMaxX; ++$x)
         {
@@ -85,17 +87,16 @@ class Day_17 extends Aoc
             if($result['success'])
             {
                 $results[] = $result;
-                $maxY = is_null($maxY) ? $result['maxY'] : max($maxY, $result['maxY']);
             }
         }
 
         return $results;
     }
 
-    protected function tryLaunch($forward, $upward)
+    protected function tryLaunch($initialForward, $initialUpward)
     {
-        $initialForward = $forward;
-        $initialUpward = $upward;
+        $forward = $initialForward;
+        $upward = $initialUpward;
 
         $x = 0;
         $y = 0;
@@ -105,6 +106,7 @@ class Day_17 extends Aoc
             'maxY' => 0,
             'forward' => $forward,
             'upward' => $upward,
+            'points' => [[0, 0]],
         ];
 
         while($x <= $this->targetMaxX && $y >= $this->targetMinY)
@@ -119,9 +121,8 @@ class Day_17 extends Aoc
             $y += $upward;
             $upward = $upward - 1;
 
+            $result['points'][] = [$x, $y];
             $result['maxY'] = max($result['maxY'], $y);
-
-            //echo "Position : $x, $y\n";
 
             if($x >= $this->targetMinX && $x <= $this->targetMaxX && $y <= $this->targetMaxY && $y >= $this->targetMinY)
             {
@@ -132,5 +133,37 @@ class Day_17 extends Aoc
         }
 
         return $result;
+    }
+
+    protected function displayPoints($results)
+    {
+        $maxY = $this->arrayMax($results, 'maxY');
+
+        for($r=($maxY ? $maxY : 0); $r>=$this->targetMinY; $r--)
+        {
+            for($c=0; $c<$this->targetMaxX; $c++)
+            { 
+                $display = '.';
+                foreach($results as $result)
+                {
+                    foreach($result['points'] as $point)
+                    {
+                        if($c === $point[0] && $r === $point[1])
+                        {
+                            $display = '#';
+                        }
+                    }
+                }
+                if($display === '.')
+                {
+                    if($c >= $this->targetMinX && $c <= $this->targetMaxX && $r >= $this->targetMinY && $r <= $this->targetMaxY)
+                    {
+                        $display = 'T';
+                    }
+                }
+                echo $display;
+            }
+            echo "\n";
+        }
     }
 }
