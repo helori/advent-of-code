@@ -2,12 +2,25 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-use Symfony\Component\VarDumper\VarDumper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use Carbon\Carbon;
 
 error_reporting(E_ALL);
+
+/*set_error_handler(function(
+    int $errno,
+    string $errstr,
+    string $errfile,
+    int $errline,
+    array $errcontext
+){
+    $e = new Exception($errstr, $errno);
+    $trace = $e->getTrace();
+    $message = $e->getMessage();
+    dd($trace, $message);
+
+}, E_ALL);*/
 
 function secondsToStr($timeSeconds)
 {

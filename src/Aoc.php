@@ -76,6 +76,15 @@ abstract class Aoc
         }, $values);
     }
 
+    protected function arrayMax(array $array, $key)
+    {
+        $max = null;
+        foreach($array as $item){
+            $max = is_null($max) ? $item[$key] : max($max, $item[$key]);
+        }
+        return $max;
+    }
+
     protected function matrixNumRows($matrix)
     {
         return count($matrix);
@@ -153,16 +162,5 @@ abstract class Aoc
             $lineStr = implode($separator, $matrix[$r]);
             echo $lineStr."\n";
         }
-    }
-
-    protected function dump($value)
-    {
-        VarDumper::dump($value);
-    }
-
-    protected function dd($value)
-    {
-        VarDumper::dump($value);
-        exit;
     }
 }
