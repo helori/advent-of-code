@@ -82,11 +82,13 @@ class Day_10 extends Aoc
             if(!isset($corrupted[$lineIdx]) && !empty($opens))
             {
                 $incompletes[$lineIdx] = '';
+                $opens = array_reverse($opens);
                 for($j=0; $j<count($opens); ++$j){
                     $incompletes[$lineIdx] .= $this->closingCharFor($opens[$j]);
                 }
             }
         }
+        
         return [
             'corrupted' => $corrupted,
             'incompletes' => $incompletes,
