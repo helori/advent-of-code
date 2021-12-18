@@ -85,7 +85,7 @@ class Day_18 extends Aoc
             if($opens === 5)
             {
                 $pairToExplodeStr = Str::before(substr($str, $i), ']').']';
-                $pairToExplode = json_decode($pairToExplodeStr, true, 512,  JSON_BIGINT_AS_STRING);
+                $pairToExplode = json_decode($pairToExplodeStr, true);
                 $str = substr_replace($str, '0', $i, strlen($pairToExplodeStr));
                 
                 $message = "";
@@ -94,10 +94,10 @@ class Day_18 extends Aoc
                 preg_match('/\d+/', $rightStr, $m, PREG_OFFSET_CAPTURE);
                 if(sizeof($m))
                 {
-                    $rightNum = $m[0][0];
+                    $rightNum = intVal($m[0][0]);
                     $rightPos = $m[0][1];
-                    $sum = bcadd($pairToExplode[1], $rightNum, 0);
-                    $message .= " | Right : ".$pairToExplode[1]." + ".$rightNum." = ".$sum;
+                    $sum = $pairToExplode[1] + $rightNum;
+                    //$message .= " | Right : ".$pairToExplode[1]." + ".$rightNum." = ".$sum;
                     $str = substr_replace($str, $sum, $i + 1 + $rightPos, strlen($rightNum));
                 }
 
@@ -105,10 +105,10 @@ class Day_18 extends Aoc
                 preg_match('/\d+/', $leftStr, $m, PREG_OFFSET_CAPTURE);
                 if(sizeof($m))
                 {
-                    $leftNum = strrev($m[0][0]);
+                    $leftNum = intVal(strrev($m[0][0]));
                     $leftPos = $m[0][1];
-                    $sum = bcadd($pairToExplode[0], $leftNum, 0);
-                    $message .= " | Left : ".$pairToExplode[0]." + ".$leftNum." = ".$sum;
+                    $sum = $pairToExplode[0] + $leftNum;
+                    //$message .= " | Left : ".$pairToExplode[0]." + ".$leftNum." = ".$sum;
                     $str = substr_replace($str, $sum, $i - $leftPos - strlen($leftNum), strlen($leftNum));
                 }
 
@@ -134,11 +134,10 @@ class Day_18 extends Aoc
         {
             if(bccomp($value, '9', 0) === 1)
             {
-                $half = bcdiv($value, '2', 1);
-                $valueLeft = $this->bcfloor($half);
-                $valueRight = $this->bcceil($half);
+                $half = $value / 2;
+                $valueLeft = intVal(floor($half));
+                $valueRight = intVal(ceil($half));
                 $newVal = '['.$valueLeft.','.$valueRight.']';
-                //dump($value, $newVal);
                 
                 $pos = strpos($str, $value);
                 $str = substr_replace($str, $newVal, $pos, strlen((string)$value));
@@ -153,28 +152,6 @@ class Day_18 extends Aoc
             'done' => $found,
             'pair' => $str,
         ];
-    }
-
-    protected function bcfloor($str)
-    {
-        if(strpos(strrev($str), ".") === 1)
-        {
-            $str = substr($str, 0, strlen($str) - 2);
-        }
-        return $str;
-    }
-
-    protected function bcceil($str)
-    {
-        if(strpos(strrev($str), ".") === 1)
-        {
-            $last = substr($str, strlen($str) - 1);
-            $str = substr($str, 0, strlen($str) - 2);
-            if($last !== '0'){
-                $str = bcadd($str, '1');
-            }
-        }
-        return $str;
     }
 
     protected function sum($num1, $num2)
