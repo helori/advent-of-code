@@ -5,6 +5,10 @@ namespace Aoc;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 
+use Graphp\Algorithms\ShortestPath\Dijkstra;
+use Fhaculty\Graph\Graph;
+use Fhaculty\Graph\Vertex;
+
 class Day_15 extends Aoc
 {
     protected $matrix = null;
@@ -15,25 +19,76 @@ class Day_15 extends Aoc
         foreach($this->matrix as $i => $line){
             $this->matrix[$i] = $this->toInts(str_split(trim($line)));
         }
-        //$this->dump($this->matrix);
     }
 
     protected function runPart1()
     {
-        return $this->findShortest($this->matrix);
+        return $this->findShortestDijkstra();
     }
 
     protected function runPart2()
     {
-        $matrix = $this->replicateMatrix($this->matrix, 5);
-        //$this->renderMatrix($matrix);
-        return $this->findShortest($matrix);
+        $this->matrix = $this->replicateMatrix($this->matrix, 5);
+        return $this->findShortestDijkstra();
     }
 
-    protected function findShortest($matrix)
+    protected function findShortestDijkstra()
     {
-        $rows = $this->matrixNumRows($matrix);
-        $cols = $this->matrixNumCols($matrix);
+        $graph = new Graph();
+
+        $rows = $this->matrixNumRows($this->matrix);
+        $cols = $this->matrixNumCols($this->matrix);
+
+        for($r=0; $r<$rows; $r++)
+        {
+            for($c=0; $c<$cols; $c++)
+            {
+                $i = $r * $cols + $c;
+                $graph->createVertex($i);
+            }   
+        }
+
+        for($r=0; $r<$rows; $r++)
+        {
+            for($c=0; $c<$cols; $c++)
+            {
+                $i = $r * $cols + $c;
+                $vertex = $graph->getVertex($i);
+
+                if($r>0){
+                    $j = ($r-1) * $cols + $c;
+                    $edge = $graph->getVertex($i)->createEdgeTo($graph->getVertex($j));
+                    $edge->setWeight($this->matrix[$r-1][$c]);
+                }
+                if($r<$rows-1){
+                    $j = ($r+1) * $cols + $c;
+                    $edge = $graph->getVertex($i)->createEdgeTo($graph->getVertex($j));
+                    $edge->setWeight($this->matrix[$r+1][$c]);
+                }
+                if($c>0){
+                    $j = $r * $cols + ($c-1);
+                    $edge = $graph->getVertex($i)->createEdgeTo($graph->getVertex($j));
+                    $edge->setWeight($this->matrix[$r][$c-1]);
+                }
+                if($c<$cols-1){
+                    $j = $r * $cols + ($c+1);
+                    $edge = $graph->getVertex($i)->createEdgeTo($graph->getVertex($j));
+                    $edge->setWeight($this->matrix[$r][$c+1]);
+                }
+            }
+        }
+
+        $alg = new Dijkstra($graph->getVertex(0));
+        $distance = $alg->getDistance($graph->getVertex($rows * $cols - 1));
+        
+        return $distance;
+    }
+
+    // Solution "maison" qui marche, mais prend + de temps :
+    protected function findShortest()
+    {
+        $rows = $this->matrixNumRows($this->matrix);
+        $cols = $this->matrixNumCols($this->matrix);
         
         $paths = [
             '0_0' => [
@@ -41,95 +96,64 @@ class Day_15 extends Aoc
                 'c' => 0,
                 'sum' => 0,
                 'from' => null,
-                'key' => '0_0',
             ],
         ];
 
-        // Pas optimal mais permet de trouver le bon résultat.
-        // Si on n'avance que vers le bas et la droite, alors $steps = $rows + $cols - 2
-        // Ça fonctionne bien ainsi pour la partie 1.
-        //
-        // La partie 2 nécessite de contourner des blocs par la gauche ou par le haut.
-        // Dans l'exemple donné, il n'y a pas de contournements, et donc l'algo de la partie 1 fonctionne.
-        // Mais avec le puzzle input, il y a des contournements !
-        // Le nombre de step nécessaires augmente donc pour arriver en bas à droite
-        // En doublant le nombre de steps, on trouve le résultat, mais on peut peut-être en faire moins ?
-        $steps = 2 * ($rows + $cols - 2);
-        $step = 0;
-
-        while($step < $steps)
+        // Quand plus aucun des chemins exploré n'a de piste, on arrête
+        $canExplore = true;
+        while($canExplore)
         {
             $newPaths = $paths;
+            $canExplore = false;
+
             foreach($paths as $path)
             {
                 $r = $path['r'];
                 $c = $path['c'];
 
+                $canExplorePath = false;
+
                 if(($r < ($rows - 1)) && ($path['from'] !== 'b'))
                 {
-                    $key = ($r + 1).'_'.$c;
-                    $sum = $path['sum'] + $matrix[$r + 1][$c];
-                    if(!isset($newPaths[$key]) || $newPaths[$key]['sum'] > $sum){
-                        $newPaths[$key] = [
-                            'r' => $r + 1,
-                            'c' => $c,
-                            'sum' => $sum,
-                            'from' => 't',
-                            'key' => $key,
-                        ];
-                    }
+                    $canExplorePath |= $this->tryPath('t', $r + 1, $c, $path, $newPaths);
                 }
                 if(($c < ($cols - 1)) && ($path['from'] !== 'r'))
                 {
-                    $key = $r.'_'.($c + 1);
-                    $sum = $path['sum'] + $matrix[$r][$c + 1];
-                    if(!isset($newPaths[$key]) || $newPaths[$key]['sum'] > $sum){
-                        $newPaths[$key] = [
-                            'r' => $r,
-                            'c' => $c + 1,
-                            'sum' => $sum,
-                            'from' => 'l',
-                            'key' => $key,
-                        ];
-                    }
+                    $canExplorePath |= $this->tryPath('l', $r, $c + 1, $path, $newPaths);
                 }
                 if(($r > 0) && ($path['from'] !== 't'))
                 {
-                    $key = ($r - 1).'_'.$c;
-                    $sum = $path['sum'] + $matrix[$r - 1][$c];
-                    if(!isset($newPaths[$key]) || $newPaths[$key]['sum'] > $sum){
-                        $newPaths[$key] = [
-                            'r' => $r - 1,
-                            'c' => $c,
-                            'sum' => $sum,
-                            'from' => 'b',
-                            'key' => $key,
-                        ];
-                    }
+                    $canExplorePath |= $this->tryPath('b', $r - 1, $c, $path, $newPaths);
                 }
                 if(($c > 0) && ($path['from'] !== 'l'))
                 {
-                    $key = $r.'_'.($c - 1);
-                    $sum = $path['sum'] + $matrix[$r][$c - 1];
-                    if(!isset($newPaths[$key]) || $newPaths[$key]['sum'] > $sum){
-                        $newPaths[$key] = [
-                            'r' => $r,
-                            'c' => $c - 1,
-                            'sum' => $sum,
-                            'from' => 'r',
-                            'key' => $key,
-                        ];
-                    }
+                    $canExplorePath |= $this->tryPath('r', $r, $c - 1, $path, $newPaths);
                 }
+
+                $canExplore |= $canExplorePath;
             }
             $paths = $newPaths;
-            $step++;
         }
         
         $lastKey = ($rows - 1).'_'.($cols - 1);
-        //$this->dump($paths[$lastKey]);
-
         return $paths[$lastKey]['sum'];
+    }
+
+    protected function tryPath($from, $r, $c, $path, &$newPaths)
+    {
+        $key = $r.'_'.$c;
+        $sum = $path['sum'] + $this->matrix[$r][$c];
+        
+        if(!isset($newPaths[$key]) || $newPaths[$key]['sum'] > $sum){
+            $newPaths[$key] = [
+                'r' => $r,
+                'c' => $c,
+                'sum' => $sum,
+                'from' => $from,
+            ];
+            return true;
+        }
+        return false;
     }
 
     
