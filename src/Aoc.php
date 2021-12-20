@@ -163,4 +163,13 @@ abstract class Aoc
             echo $lineStr."\n";
         }
     }
+
+    protected function renderLines(&$lines)
+    {
+        $rows = count($lines);
+        for($r=0; $r<$rows; ++$r)
+        {
+            echo $lines[$r]."\n";
+        }
+    }
 }
