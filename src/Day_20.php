@@ -80,39 +80,39 @@ class Day_20 extends Aoc
 
             for($c=-2; $c<$cols; ++$c)
             {
-                $bits = '';
+                $symbols = '';
                 for($rSub=$r; $rSub<$r+3; ++$rSub)
                 {
                     for($cSub=$c; $cSub<$c+3; ++$cSub)
                     {
                         if($rSub < 0 || $cSub < 0 || $rSub >= $rows || $cSub >= $cols)
                         {
-                            $bits .= $outsideSymbol;
+                            $symbols .= $outsideSymbol;
                         }
                         else{
-                            $bits .= $image[$rSub][$cSub];
+                            $symbols .= $image[$rSub][$cSub];
                         }
                     }
                 }
-                $bits = str_replace('.', '0', $bits);
-                $bits = str_replace('#', '1', $bits);
-                $position = intVal(base_convert($bits, 2, 10));
-                $newRow[] = $this->algo[$position];
+                $newRow[] = $this->convertSymbols($symbols);
             }
-
             $newImage[] = $newRow;
         }
 
-        
-        $bits = implode('', array_fill(0, 9, $outsideSymbol));
-        $bits = str_replace('.', '0', $bits);
-        $bits = str_replace('#', '1', $bits);
-        $position = intVal(base_convert($bits, 2, 10));
-        $newOutsideSymbol = $this->algo[$position];
+        $symbols = implode('', array_fill(0, 9, $outsideSymbol));
+        $newOutsideSymbol = $this->convertSymbols($symbols);
 
         return [
             'image' => $newImage,
             'outside_symbol' => $newOutsideSymbol,
         ];
+    }
+
+    protected function convertSymbols($symbols)
+    {
+        $symbols = str_replace('.', '0', $symbols);
+        $symbols = str_replace('#', '1', $symbols);
+        $position = intVal(base_convert($symbols, 2, 10));
+        return $this->algo[$position];
     }
 }
