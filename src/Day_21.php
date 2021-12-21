@@ -80,22 +80,9 @@ class Day_21 extends Aoc
     protected function runPart2()
     {
         $universes = [
-            [
-                'p' => [
-                    [
-                        'at' => 4,
-                        'sc' => 0,
-                    ],
-                    [
-                        'at' => 8,
-                        'sc' => 0,
-                    ],
-                ],
-                'e' => false,
-            ],
+            '4_2_0_0' => 1,
         ];
 
-        $winScore = 21;
         $allEnded = false;
 
         while(!$allEnded)
@@ -104,7 +91,7 @@ class Day_21 extends Aoc
             $universes = $this->rollQuanticDice($universes, 0);
             $universes = $this->rollQuanticDice($universes, 0);
 
-            $this->computeScores($universes, 0);
+            $universes = $this->computeScore($universes, 0);
             $allEnded = $this->checkEnded($universes);
 
             if(!$allEnded)
@@ -113,73 +100,116 @@ class Day_21 extends Aoc
                 $universes = $this->rollQuanticDice($universes, 1);
                 $universes = $this->rollQuanticDice($universes, 1);
 
-                $this->computeScores($universes, 1);
+                $universes = $this->computeScore($universes, 1);
                 $allEnded = $this->checkEnded($universes);
             }
         }
 
-        $winning1 = count(Arr::where($universes, function($universe){
-            return $universe['p'][0]['sc'] >= 21;
-        }));
+        //dd($universes);
 
-        $winning2 = count(Arr::where($universes, function($universe){
-            return $universe['p'][1]['sc'] >= 21;
-        }));
+        $winning1 = 0;
+        $winning2 = 0;
+
+        foreach($universes as $key => $count)
+        {
+            $keyParts = explode('_', $key);
+            $score1 = intVal($keyParts[2]);
+            $score2 = intVal($keyParts[3]);
+
+            if($score1 >= 21)
+            {
+                $winning1 += $count;
+            }
+            if($score2 >= 21)
+            {
+                $winning2 += $count;
+            }
+        }
 
         return ($winning1 > $winning2) ? $winning1 : $winning2;
     }
 
-    protected function checkEnded(&$universes)
-    {
-        $ended = true;
-        foreach($universes as $universe)
-        {
-            $ended &= $universe['e'];
-        }
-        return $ended;
-    }
-
     protected function rollQuanticDice(&$universes, $playerIdx)
     {
-        $newUniverses = [];
-        foreach($universes as $universe)
+        $newUniverses = $universes;
+        foreach($universes as $key => $count)
         {
-            if(!$universe['e'])
+            $parts = explode('_', $key);
+            $sc1 = intVal($parts[2]);
+            $sc2 = intVal($parts[3]);
+
+            if($sc1 < 21 && $sc2 < 21)
             {
-                $newUniverses[] = $this->createUniverse($universe, 1, $playerIdx);
-                $newUniverses[] = $this->createUniverse($universe, 2, $playerIdx);
-                $newUniverses[] = $this->createUniverse($universe, 3, $playerIdx);
-            }
-            else
-            {
-                $newUniverses[] = $universe;
+                $keyMoved = $this->moveKey($key, 1, $playerIdx);
+                $this->incrementKey($newUniverses, $keyMoved, $count);
+
+                $keyMoved = $this->moveKey($key, 2, $playerIdx);
+                $this->incrementKey($newUniverses, $keyMoved, $count);
+
+                $keyMoved = $this->moveKey($key, 3, $playerIdx);
+                $this->incrementKey($newUniverses, $keyMoved, $count);
+
+                $newUniverses[$key] -= $count;
             }
         }
-        return $newUniverses;
+        return array_filter($newUniverses);
     }
 
-    protected function createUniverse($baseUniverse, $spaces, $playerIdx)
+    protected function incrementKey(&$universes, $key, $count)
     {
-        $at = $baseUniverse['p'][$playerIdx]['at'];
-        $at = $this->movePawn($at, $spaces);
-        
-        $universe = $baseUniverse;
-        $universe['p'][$playerIdx]['at'] = $at;
-
-        return $universe;
-    }
-
-    protected function computeScores(&$universes, $playerIdx)
-    {
-        foreach($universes as &$universe)
-        {
-            $this->computeScore($universe, $playerIdx);
-            $universe['e'] = ($universe['p'][$playerIdx]['sc'] >= 21);
+        if(!isset($universes[$key])){
+            $universes[$key] = 0;
         }
+        $universes[$key] += $count;
     }
 
-    protected function computeScore(&$universe, $playerIdx)
+    protected function moveKey($key, $spaces, $playerIdx)
     {
-        $universe['p'][$playerIdx]['sc'] += $universe['p'][$playerIdx]['at'];
+        $keyParts = explode('_', $key);
+        $at = intVal($keyParts[$playerIdx]);
+
+        $at1 = $this->movePawn($at, $spaces);
+        $keyParts[$playerIdx] = $at1;
+        $key1 = implode('_', $keyParts);
+
+        return $key1;
+    }
+
+    protected function computeScore(&$universes, $playerIdx)
+    {
+        $newUniverses = $universes;
+        foreach($universes as $key => $count)
+        {
+            $keyParts = explode('_', $key);
+            $score1 = intVal($keyParts[2]);
+            $score2 = intVal($keyParts[3]);
+
+            if($score1 < 21 && $score2 < 21)
+            {
+                $score = intVal($keyParts[$playerIdx + 2]);
+                $at = intVal($keyParts[$playerIdx]);
+                $keyParts[$playerIdx + 2] = $score + $at;
+                $newKey = implode('_', $keyParts);
+
+                $this->incrementKey($newUniverses, $newKey, $count);
+                $newUniverses[$key] -= $count;
+            }
+        }
+        return array_filter($newUniverses);
+    }
+
+    protected function checkEnded(&$universes)
+    {
+        $allEnded = true;
+        foreach($universes as $key => $count)
+        {
+            $keyParts = explode('_', $key);
+            $score1 = intVal($keyParts[2]);
+            $score2 = intVal($keyParts[3]);
+
+            $universeEnded = ($score1 >= 21) || ($score2 >= 21);
+            $allEnded &= $universeEnded;
+        }
+        return $allEnded;
     }
 }
