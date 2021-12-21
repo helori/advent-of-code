@@ -105,8 +105,6 @@ class Day_21 extends Aoc
             }
         }
 
-        //dd($universes);
-
         $winning1 = 0;
         $winning2 = 0;
 
@@ -168,11 +166,10 @@ class Day_21 extends Aoc
         $keyParts = explode('_', $key);
         $at = intVal($keyParts[$playerIdx]);
 
-        $at1 = $this->movePawn($at, $spaces);
-        $keyParts[$playerIdx] = $at1;
-        $key1 = implode('_', $keyParts);
+        $keyParts[$playerIdx] = $this->movePawn($at, $spaces);
+        $newKey = implode('_', $keyParts);
 
-        return $key1;
+        return $newKey;
     }
 
     protected function computeScore(&$universes, $playerIdx)
