@@ -126,7 +126,7 @@ class Day_21 extends Aoc
             }
         }
 
-        return ($winning1 > $winning2) ? $winning1 : $winning2;
+        return max($winning1, $winning2);
     }
 
     protected function rollQuanticDice(&$universes, $playerIdx)
