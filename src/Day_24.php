@@ -72,7 +72,7 @@ class Day_24 extends Aoc
         $digits[1] = $digits[12] - 8;
         $digits[13] = $digits[0] - 6;
 
-        return implode('', $digits);
+        return intVal(implode('', $digits));
     }
 
     protected function runPart2()
@@ -95,6 +95,6 @@ class Day_24 extends Aoc
         $digits[12] = $digits[1] + 8;
         $digits[0] = $digits[13] + 6;
 
-        return implode('', $digits);
+        return intVal(implode('', $digits));
     }
 }

@@ -36,14 +36,11 @@ class Day_23 extends Aoc
 
     protected function runPart1()
     {
-        return 0;
         return $this->findMinScore($this->initialData);
     }
 
     protected function runPart2()
     {
-        //return 0;
-
         array_splice($this->initialData, 1, 0, ['D', 'D']);
         array_splice($this->initialData, 5, 0, ['B', 'C']);
         array_splice($this->initialData, 9, 0, ['A', 'B']);
