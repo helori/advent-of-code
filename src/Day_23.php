@@ -11,6 +11,10 @@ class Day_23 extends Aoc
     protected $initialData = null;
     protected $minScore = null;
 
+    // This is just to exit premaurely on tests
+    protected $numExplores = 0;
+    protected $maxExplores = 10;
+
     protected function init()
     {
         $this->lines = array_filter($this->lines);
@@ -32,13 +36,13 @@ class Day_23 extends Aoc
 
     protected function runPart1()
     {
-        //return 0;
+        return 0;
         return $this->findMinScore($this->initialData);
     }
 
     protected function runPart2()
     {
-        return 0;
+        //return 0;
 
         array_splice($this->initialData, 1, 0, ['D', 'D']);
         array_splice($this->initialData, 5, 0, ['B', 'C']);
@@ -58,19 +62,30 @@ class Day_23 extends Aoc
 
     protected function explore($data, $depth)
     {
-        /*$this->render($data);
         /*if($this->checkExit()){
             return;
         }*/
-        if($depth === 1){
-            dump("=> First Level");
+
+        //dump('#########');
+        $message = "Depth : ".$depth.' | score : '.$data[count($data) - 1];
+        if($this->minScore){
+            $message .= ' | min : '.$this->minScore;
         }
+        //dump($message);
+        //$this->render2($data);
+
+        // 28 first levels to follow progress in terminal :
+        /*static $firstLevelCounter = 0;
+        if($depth === 1){
+            $firstLevelCounter++;
+            dump("=> First Level : $firstLevelCounter");
+        }*/
 
         if($this->checkWin($data))
         {
             $score = $data[count($data) - 1];
             $this->minScore = is_null($this->minScore) ? $score : min($score, $this->minScore);
-            dump("Win Score : $score");
+            //dump("Win Score : $score");
         }
         else
         {
@@ -93,7 +108,7 @@ class Day_23 extends Aoc
 
     protected function fill($data, $p, $tubeIdx, $depth)
     {
-        $t0 = $tubeIdx * 2;
+        $t0 = $tubeIdx * $this->tubeSize;
         $tn = $t0 + $this->tubeSize - 1;
 
         $tubeLetter = $this->tubeLetter($tubeIdx);
@@ -129,7 +144,7 @@ class Day_23 extends Aoc
 
     protected function park($data, $p, $tubeIdx, $depth)
     {
-        $t0 = $tubeIdx * 2;
+        $t0 = $tubeIdx * $this->tubeSize;
         $tn = $t0 + $this->tubeSize - 1;
 
         $tubeLetter = $this->tubeLetter($tubeIdx);
@@ -326,8 +341,8 @@ class Day_23 extends Aoc
 
     protected function render2($data)
     {
-        echo "\n";
-        dump("Score : ".$data[count($data) - 1]);
+        //echo "\n";
+        //dump("Score : ".$data[count($data) - 1]);
         echo $data[4 * $this->tubeSize + 0] ?? '-';
         echo $data[4 * $this->tubeSize + 1] ?? '-';
         echo '-';
@@ -363,10 +378,6 @@ class Day_23 extends Aoc
         else if($letter === 'D') return 1000;
         else return null;
     }
-
-    // This is just to exit premaurely on tests
-    protected $numExplores = 0;
-    protected $maxExplores = 100000;
 
     protected function checkExit()
     {
