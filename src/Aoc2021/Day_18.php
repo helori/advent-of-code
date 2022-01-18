@@ -1,7 +1,8 @@
 <?php
 
-namespace Aoc;
+namespace Aoc\Aoc2021;
 
+use Aoc\Aoc;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 

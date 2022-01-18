@@ -2,6 +2,7 @@
 
 namespace Aoc;
 
+use Aoc\Aoc;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 

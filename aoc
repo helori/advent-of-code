@@ -2,147 +2,29 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
 use Carbon\Carbon;
 
 error_reporting(E_ALL);
 
-/*set_error_handler(function(
-    int $errno,
-    string $errstr,
-    string $errfile,
-    int $errline,
-    array $errcontext
-){
-    $e = new Exception($errstr, $errno);
-    $trace = $e->getTrace();
-    $message = $e->getMessage();
-    dd($trace, $message);
-
-}, E_ALL);*/
-
-function secondsToStr($timeSeconds)
-{
-    $hours = intVal(floor($timeSeconds / 3600));
-    $minutes = intVal(floor(($timeSeconds - $hours * 3600) / 60));
-    $seconds = $timeSeconds - $hours * 3600 - $minutes * 60;
-    return $hours.":".str_pad($minutes, 2, '0', STR_PAD_LEFT).":".str_pad($seconds, 2, '0', STR_PAD_LEFT);
-}
-
 if($argv[1] === 'rank')
 {
-    $client = new Client();
-    $jar = CookieJar::fromArray(
-        [
-            'session' => trim(file_get_contents(__DIR__.'/token')),
-        ],
-        'adventofcode.com'
-    );
-    $response = $client->request('GET', 'https://adventofcode.com/2021/leaderboard/private/view/629107.json', [
-        'cookies' => $jar
-    ]);
-    $body = $response->getBody();
-    $data = json_decode($body, true);
-
-    $members = [];
-    foreach($data['members'] as $member)
-    {
-        $minTime = 9999999999;
-        $minDay = null;
-
-        $diffTime = 9999999999;
-        $diffDay = null;
-
-        $diffSum = 0;
-        $diffDays = 0;
-
-        foreach($member['completion_day_level'] as $d => $day){
-            foreach($day as $star => $starData){
-                $timestamp = intVal($starData['get_star_ts']);
-                $time = Carbon::createFromTimestamp($timestamp);
-                $start = Carbon::create(2021, 12, $d, 6, 0, 0)->setTimezone('Europe/Paris')->setHour(6);
-                $seconds = $start->diffInSeconds($time);
-                if($seconds < $minTime)
-                {
-                    $minTime = $seconds;
-                    $minDay = $d;
-                }
-            }
-            if(count($day) === 2){
-                $t1 = Carbon::createFromTimestamp($day['1']['get_star_ts']);
-                $t2 = Carbon::createFromTimestamp($day['2']['get_star_ts']);
-                $seconds = $t1->diffInSeconds($t2);
-                if($seconds < $diffTime)
-                {
-                    $diffTime = $seconds;
-                    $diffDay = $d;
-                }
-                $diffSum += $seconds;
-                $diffDays++;
-            }
-        }
-        
-        $str = secondsToStr($minTime);
-        $members[] = [
-            'name' => $member['name'],
-            'min_time_seconds' => $minTime,
-            'min_time_str' => secondsToStr($minTime),
-            'min_time_day' => $minDay,
-            'diff_time_seconds' => $diffTime,
-            'diff_time_str' => secondsToStr($diffTime),
-            'diff_time_day' => $diffDay,
-            'diff_avg_seconds' => round($diffSum / $diffDays),
-            'diff_avg_str' => secondsToStr(round($diffSum / $diffDays)),
-        ];
-    }
-
-
-    echo "---------------------------------------------------------------------\n";
-    echo "Classement de ceux qui ont eu une 1ère étoile en un minimum de temps\n";
-    echo "---------------------------------------------------------------------\n";
-    usort($members, function($a, $b){
-        return ($a['min_time_seconds'] < $b['min_time_seconds']) ? -1 : 1;
-    });
-    foreach($members as $member)
-    {
-        echo $member['name']." : ".$member['min_time_str']." (Day ".$member['min_time_day'].")\n";
-    }
-    echo "---------------------------------------------------------------------\n";
-    echo "Classement de ceux qui ont mis le moins de temps entre 2 étoiles\n";
-    echo "---------------------------------------------------------------------\n";
-    usort($members, function($a, $b){
-        return ($a['diff_time_seconds'] < $b['diff_time_seconds']) ? -1 : 1;
-    });
-    foreach($members as $member)
-    {
-        echo $member['name']." : ".$member['diff_time_str']." (Day ".$member['diff_time_day'].")\n";
-    }
-    echo "---------------------------------------------------------------------\n";
-    echo "Classement de ceux qui ont mis en moyenne le moins de temps entre 2 étoiles\n";
-    echo "---------------------------------------------------------------------\n";
-    usort($members, function($a, $b){
-        return ($a['diff_avg_seconds'] < $b['diff_avg_seconds']) ? -1 : 1;
-    });
-    foreach($members as $member)
-    {
-        echo $member['name']." : ".$member['diff_avg_str']."\n";
-    }
-    echo "------------\n";
-    exit;   
+    $ranking = new \Aoc\Ranking();
+    $ranking->rank("first-star-time");
+    $ranking->rank("second-star-avg-time");
 }
 
 else if($argv[1] === 'check')
 {
     //$days = Carbon::now()->day;
+    $year = $argv[2];
     $days = 25;
-    $results = require(__DIR__.'/results.php');
+    $results = require(__DIR__.'/files/Aoc'.$year.'Results.php');
 
     echo "------------\n";
     for($day=1; $day<=$days; $day++)
     {
         $dayStr = str_pad($day, 2, '0', STR_PAD_LEFT);
-        $classname = 'Aoc\\Day_'.$dayStr;
+        $classname = 'Aoc\\Aoc'.$year.'\\Day_'.$dayStr;
 
         if(class_exists($classname))
         {
@@ -159,44 +41,50 @@ else if($argv[1] === 'check')
     exit;
 }
 
-if($argc < 3){
-    echo "------------------------------\n";
-    echo "Run either of the following :\n";
-    echo "- Create class for a day : php aoc create 12\n";
-    echo "- Run code for a day : php aoc run 12\n";
-    echo "------------------------------\n";
-    exit;
-}
-
-if($argv[1] === 'create')
+else if($argv[1] === 'create')
 {
-    $day = intVal($argv[2]);
+    $year = intVal($argv[2]);
+    $day = intVal($argv[3]);
     $day = str_pad($day, 2, '0', STR_PAD_LEFT);
     
     $stub = file_get_contents(__DIR__.'/stubs/Day.php');
     $classname = 'Day_'.$day;
+    $stub = str_replace('namespace Aoc;', 'namespace Aoc\\Aoc'.$year.';', $stub);
     $stub = str_replace('Day extends', $classname.' extends', $stub);
 
-    $filepath = __DIR__.'/src/'.$classname.'.php';
+    $folder = __DIR__.'/src/Aoc'.$year;
+    if(!is_dir($folder)){
+        mkdir($folder, 0755, true);
+    }
+
+    $filepath = __DIR__.'/src/Aoc'.$year.'/'.$classname.'.php';
     if(!file_exists($filepath)){
         file_put_contents($filepath, $stub);
     }else{
         echo "The class file already exists !\n";
     }
 
-    $filepath = __DIR__.'/files/'.$classname.'.txt';
+    $folder = __DIR__.'/files/Aoc'.$year;
+    if(!is_dir($folder)){
+        mkdir($folder, 0755, true);
+    }
+
+    $filepath = __DIR__.'/files/Aoc'.$year.'/'.$classname.'.txt';
     if(!file_exists($filepath)){
         file_put_contents($filepath, '');
     }else{
         echo "The input file already exists !\n";
     }
 }
+
 else if($argv[1] === 'run')
 {
-    $day = str_pad($argv[2], 2, '0', STR_PAD_LEFT);
-    $classname = 'Aoc\\Day_'.$day;
+    $year = intVal($argv[2]);
+    $day = str_pad($argv[3], 2, '0', STR_PAD_LEFT);
+    $classname = 'Aoc\\Aoc'.$year.'\\Day_'.$day;
 
     $result = (new $classname())->run();
+    
     echo "------------\n";
     echo "Résultat partie 1 : ".$result['result_part1']."\n";
     echo "Temps d'exécution : ".$result['seconds_part1']."s\n";

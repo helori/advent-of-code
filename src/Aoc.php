@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 abstract class Aoc
 {
+    protected $year = null;
     protected $lines = [];
 
     abstract protected function init();
@@ -17,8 +18,18 @@ abstract class Aoc
 
     public function __construct()
     {
-        $filename = Str::after(static::class, 'Aoc\\');
+        $this->year = $this->getYear();
+        $filename = Str::afterLast(static::class, '\\');
         $this->lines = $this->fileLines($filename.'.txt');
+    }
+
+    public function getYear()
+    {
+        $object = new \ReflectionObject($this);
+        $method = $object->getMethod('init');
+        $declaringClass = $method->getDeclaringClass();
+        $filename = $declaringClass->getFilename();
+        return intVal(Str::afterLast(dirname($filename), '/Aoc'));
     }
 
     public function run()
@@ -43,15 +54,15 @@ abstract class Aoc
 
     protected function fileLines($filename)
     {
-        $filepath = __DIR__.'/../files/'.$filename;
+        $filepath = dirname(__DIR__).'/files/Aoc'.$this->year.'/'.$filename;
         
         if(!file_exists($filepath)){
-            $this->dd("Missing file : ".$filepath);
+            dd("Missing file : ".$filepath);
         }
 
         $content = trim(file_get_contents($filepath));
         if(empty($content)){
-            $this->dd("Empty file : ".$filepath);
+            dd("Empty file : ".$filepath);
         }
 
         $content = fopen($filepath, 'r');
