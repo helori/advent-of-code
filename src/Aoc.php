@@ -11,6 +11,7 @@ abstract class Aoc
 {
     protected $year = null;
     protected $lines = [];
+    protected $trimLines = true;
 
     abstract protected function init();
     abstract protected function runPart1();
@@ -70,7 +71,7 @@ abstract class Aoc
 
         while(!feof($content))
         {
-            $values[] = trim(fgets($content));
+            $values[] = $this->trimLines ? trim(fgets($content)) : fgets($content);
         }
         return $values;
     }
