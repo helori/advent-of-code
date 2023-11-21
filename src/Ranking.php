@@ -34,6 +34,7 @@ class Ranking
         $data = $this->getLeaderboard();
 
         $members = [];
+
         foreach($data['members'] as $member)
         {
             $minTime = 9999999999;
