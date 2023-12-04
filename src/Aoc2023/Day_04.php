@@ -22,9 +22,16 @@ class Day_04 extends Aoc
             $numbers = $this->toInts(explode(' ', $this->singleWhitespaces($part1)));
             $winning = $this->toInts(explode(' ', $this->singleWhitespaces($part2)));
 
+            $matches = 0;
+            foreach($numbers as $value)
+            {
+                $matches += in_array($value, $winning) ? 1 : 0;
+            }
+
             $this->cards[] = [
                 'numbers' => $numbers,
                 'winning' => $winning,
+                'matches' => $matches,
             ];
         }
     }
@@ -35,13 +42,7 @@ class Day_04 extends Aoc
         
         foreach($this->cards as $card)
         {
-            $count = 0;
-            foreach($card['numbers'] as $value)
-            {
-                $count += in_array($value, $card['winning']) ? 1 : 0;
-            }
-            $score = $count ? pow(2, $count - 1) : 0;
-            $sum += $score;
+            $sum += $card['matches'] ? pow(2, $card['matches'] - 1) : 0;
         }
         
         return $sum;
@@ -57,13 +58,7 @@ class Day_04 extends Aoc
 
         foreach($this->cards as $i => $card)
         {
-            $count = 0;
-            foreach($card['numbers'] as $value)
-            {
-                $count += in_array($value, $card['winning']) ? 1 : 0;
-            }
-            
-            for($j=1; $j<=$count; ++$j)
+            for($j = 1; $j <= $card['matches']; ++$j)
             {
                 if($i + $j < count($this->cards)){
                     $counts[$i + $j] += $counts[$i];
