@@ -2,20 +2,20 @@
 
 return [
     1 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 54331,
+        'part2' => 54518,
     ],
     2 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 2162,
+        'part2' => 72513,
     ],
     3 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 537732,
+        'part2' => 84883664,
     ],
     4 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 22488,
+        'part2' => 7013204,
     ],
     5 => [
         'part1' => null,

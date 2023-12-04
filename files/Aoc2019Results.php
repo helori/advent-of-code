@@ -10,8 +10,8 @@ return [
         'part2' => 7014,
     ],
     3 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 232,
+        'part2' => 6084,
     ],
     4 => [
         'part1' => null,

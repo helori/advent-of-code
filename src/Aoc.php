@@ -184,4 +184,9 @@ abstract class Aoc
             echo $lines[$r]."\n";
         }
     }
+
+    protected function singleWhitespaces(&$str)
+    {
+        return preg_replace("/\s+/", " ", $str);
+    }
 }
