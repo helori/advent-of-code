@@ -70,13 +70,7 @@ class Day_04 extends Aoc
                 }
             }
         }
-
-        $sum = 0;
-        foreach($counts as $count)
-        {
-            $sum += $count;
-        }
-
-        return $sum;
+        
+        return array_sum($counts);
     }
 }
