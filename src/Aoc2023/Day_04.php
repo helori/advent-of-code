@@ -39,12 +39,10 @@ class Day_04 extends Aoc
     protected function runPart1()
     {
         $sum = 0;
-        
         foreach($this->cards as $card)
         {
             $sum += $card['matches'] ? pow(2, $card['matches'] - 1) : 0;
         }
-        
         return $sum;
     }
 
