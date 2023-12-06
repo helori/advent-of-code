@@ -185,8 +185,13 @@ abstract class Aoc
         }
     }
 
-    protected function singleWhitespaces(&$str)
+    protected function singleWhitespaces($str)
     {
         return preg_replace("/\s+/", " ", $str);
+    }
+
+    protected function removeWhitespaces($str)
+    {
+        return preg_replace("/\s+/", "", $str);
     }
 }
