@@ -22,12 +22,12 @@ return [
         'part2' => 69841803,
     ],
     6 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 1312850,
+        'part2' => 36749103,
     ],
     7 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 253205868,
+        'part2' => 253907829,
     ],
     8 => [
         'part1' => null,
