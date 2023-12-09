@@ -48,15 +48,15 @@ class Day_08 extends Aoc
 
     protected function runPart2()
     {
-        $values = array_keys(array_filter($this->map, function($value, $key){
-            return Str::endsWith($key, 'A');
-        }, ARRAY_FILTER_USE_BOTH));
-
+        $values = array_filter(array_keys($this->map), function($v) {
+            return Str::endsWith($v, 'A');
+        });
+        
         $zPos = [];
         
         foreach($values as $value)
         {
-            $zPos[] = $this->stepsToNextZ($value, 0);
+            $zPos[] = $this->stepsToNextZ($value);
         }
 
         $lcm = $zPos[0];
@@ -68,10 +68,10 @@ class Day_08 extends Aoc
         return $lcm;
     }
 
-    protected function stepsToNextZ($valueStart, $stepStart)
+    protected function stepsToNextZ($valueStart)
     {
         $v = $valueStart;
-        $step = $stepStart;
+        $step = 0;
         $end = false;
 
         while(!$end)
@@ -82,6 +82,6 @@ class Day_08 extends Aoc
             ++$step;
         }
 
-        return $step - $stepStart;
+        return $step;
     }
 }
