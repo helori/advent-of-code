@@ -138,13 +138,16 @@ abstract class Aoc
     {
         $rows = $this->matrixNumRows($matrix);
         $cols = $this->matrixNumCols($matrix);
+        $shouldBreak = false;
 
         for($r=0; $r<$rows; ++$r)
         {
             for($c=0; $c<$cols; ++$c)
             {
-                $callback($matrix[$r][$c], $r, $c, $rows, $cols);
+                $shouldBreak = $callback($matrix[$r][$c], $r, $c, $rows, $cols);
+                if($shouldBreak) break;
             }
+            if($shouldBreak) break;
         }
     }
 

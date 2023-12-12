@@ -38,12 +38,12 @@ return [
         'part2' => 1112,
     ],
     10 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 6733,
+        'part2' => 435,
     ],
     11 => [
         'part1' => 10077850,
-        'part2' => null,
+        'part2' => 504715068438,
     ],
     12 => [
         'part1' => null,
