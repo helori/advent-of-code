@@ -76,6 +76,20 @@ abstract class Aoc
         return $values;
     }
 
+    protected function fileMatrix(bool $asNumbers)
+    {
+        return array_map(function($line) use($asNumbers) {
+            $line = $this->singleWhitespaces($line);
+            $lineValues = array_values(array_filter(explode(' ', $line)));
+            if($asNumbers){
+                $lineValues = array_map(function($value){
+                    return intVal($value);
+                }, $lineValues);
+            }
+            return $lineValues;
+        }, $this->lines);
+    }
+
     protected function toInts(array $values)
     {
         return array_map(function($v){ return intVal($v); }, $values);
