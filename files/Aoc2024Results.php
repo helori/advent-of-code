@@ -14,8 +14,8 @@ return [
         'part2' => 67269798,
     ],
     4 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 2397,
+        'part2' => 1824,
     ],
     5 => [
         'part1' => null,

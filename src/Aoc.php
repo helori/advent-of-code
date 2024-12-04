@@ -76,11 +76,11 @@ abstract class Aoc
         return $values;
     }
 
-    protected function fileMatrix(bool $asNumbers)
+    protected function fileMatrix(bool $asNumbers, ?string $separator = ' ')
     {
-        return array_map(function($line) use($asNumbers) {
+        return array_map(function($line) use($asNumbers, $separator) {
             $line = $this->singleWhitespaces($line);
-            $lineValues = array_values(array_filter(explode(' ', $line)));
+            $lineValues = array_values(array_filter($separator ? explode($separator, $line) : str_split($line)));
             if($asNumbers){
                 $lineValues = array_map(function($value){
                     return intVal($value);
