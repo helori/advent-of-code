@@ -18,8 +18,8 @@ return [
         'part2' => 1824,
     ],
     5 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 5391,
+        'part2' => 6142,
     ],
     6 => [
         'part1' => null,
