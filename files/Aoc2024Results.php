@@ -22,8 +22,8 @@ return [
         'part2' => 6142,
     ],
     6 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 5329,
+        'part2' => 2162,
     ],
     7 => [
         'part1' => null,
