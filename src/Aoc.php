@@ -80,7 +80,7 @@ abstract class Aoc
     {
         return array_map(function($line) use($asNumbers, $separator) {
             $line = $this->singleWhitespaces($line);
-            $lineValues = array_values(array_filter($separator ? explode($separator, $line) : str_split($line)));
+            $lineValues = array_values($separator ? explode($separator, $line) : str_split($line));
             if($asNumbers){
                 $lineValues = array_map(function($value){
                     return intVal($value);

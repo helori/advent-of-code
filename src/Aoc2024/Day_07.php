@@ -13,7 +13,6 @@ class Day_07 extends Aoc
     protected function init()
     {
         $this->data = [];
-
         foreach($this->lines as $line)
         {
             $this->data[] = [
