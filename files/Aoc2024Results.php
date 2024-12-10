@@ -35,11 +35,11 @@ return [
     ],
     9 => [
         'part1' => 6359213660505,
-        'part2' => null,
+        'part2' => 6381624803796,
     ],
     10 => [
-        'part1' => null,
-        'part2' => null,
+        'part1' => 794,
+        'part2' => 1706,
     ],
     11 => [
         'part1' => null,
